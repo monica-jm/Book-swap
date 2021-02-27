@@ -5,7 +5,7 @@ const userSchema = new Schema(
   {
     username: {
       type: String,
-      required: [true, "Please add a User Name"],
+      // required: [true, "Please add a User Name"],
       unique: true,
     },
     email: {
@@ -15,7 +15,7 @@ const userSchema = new Schema(
     },
     password: {
       type: String,
-      required: [true, "Please add a password"],
+      // required: [true, "Please add a password"],
     },
     googleID: {
       type: String,
