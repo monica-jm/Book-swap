@@ -1,6 +1,9 @@
 // Error handling 
-exports.catchErrors = controller => (req, res, next) =>
-  controller(req, res).catch(next)
+exports.catchErrors = function (controller) {
+  return function (req, res, next) {
+    controller(req, res).catch(err => next(err))
+  }
+}
 
 // Check if user is logged
 exports.isAuth = (req, res, next) => {
