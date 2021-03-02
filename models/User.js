@@ -57,6 +57,12 @@ const userSchema = new Schema(
         type: Schema.Types.ObjectId,
         ref: "Book"
       }
+    ],
+    reviews: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "userReview"
+      }
     ]
   },
   

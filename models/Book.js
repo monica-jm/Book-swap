@@ -4,6 +4,10 @@ const { Schema } = mongoose;
 
 const bookSchema = new Schema(
   {
+    owner: {
+    type: Schema.Types.ObjectId,
+    ref: "User"
+  },
     title: {
       type: String,
       required: [true, "Please add a Book title"],
