@@ -3,6 +3,15 @@ const { Schema } = mongoose;
 
 const userSchema = new Schema(
   {
+    status: {
+      type: String,
+      enum: ['Pending Confirmation', 'Active'],
+      default: 'Pending Confirmation'
+    },
+    confirmationCode: {
+      type: String,
+      required: [true, "Please confirm your email"],
+    },
     username: {
       type: String,
       // required: [true, "Please add a User Name"],
@@ -50,6 +59,7 @@ const userSchema = new Schema(
       }
     ]
   },
+  
   {
     timestamps: {
       createdAt: "created_at",

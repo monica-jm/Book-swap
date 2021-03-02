@@ -3,6 +3,17 @@ const passport = require("passport")
 // Bcrypt to encrypt passwords
 const bcrypt = require("bcryptjs")
 const bcryptSalt = 10
+// Nodemailer 
+const nodemailer = require ('nodemailer')
+
+// Email Transporter
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASS
+  }
+})
 
 //Delete password and other data from response to front-end
 const clearRes = data => {
@@ -31,34 +42,48 @@ exports.signupProcess = async (req, res) => {
     return
   }
 
-//   const usernameExits = await User.findOne({ username })
-//   if (usernameExits) {
-//     return res.status(401).json({ message: "The username already exists" })
-//   }
-
   User.findOne({ email }, "email", (err, user) => {
     if (user !== null) {
       res.status(400).json({ message: "The email already exists" })
       return
     }
 
+    //Hashed pasword
     const salt = bcrypt.genSaltSync(bcryptSalt)
     const hashPass = bcrypt.hashSync(password, salt)
 
-    const newUser = new User({
-      email,
-      username,
-      password: hashPass
-    })
+    // Email veryfication Token
+    const characters =
+    "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    let token = "";
+    for (let i = 0; i < 25; i++) {
+    token += characters[Math.floor(Math.random() * characters.length)];
+    }
 
+    // New verified user
+    const newUser = new User({
+      username,
+      password: hashPass,
+      email,
+      confirmationCode: token
+      });
+
+    // Create confirmed user
     newUser
       .save()
       .then(newUser => {
-        const {
-          _doc: { password, ...rest }
-        } = newUser
-        res.status(200).json(rest)
-      })
+          transporter.sendMail({
+          from: 'BookswApp <bookswap.ironhack@gmail.com>',
+          to: email,
+          subject: "Please confirm your email",
+          text: message, 
+          html: templates.templateExample(message),
+        });
+          const {
+            _doc: { password, ...rest }
+          } = newUser
+          res.status(200).json({message: 'Confirmation email sent'});
+      })   
       .catch(err => {
         console.log(err)
         res.status(500).json({ message: err.message })
@@ -78,6 +103,11 @@ exports.checkSession = (req, res) => {
   }
   res.status(200).json(null)
 }
+
+exports.getUserProfile = (req, res) => {
+  const {username, status} = req.user
+  res.status(200).json({"username":req.user.username, "status":req.user.status} || {});
+};
 
 //Google Auth 
 exports.googleInit = passport.authenticate("google", {
