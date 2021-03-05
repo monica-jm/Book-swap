@@ -9,12 +9,12 @@ const transporter = nodemailer.createTransport({
   })
 
 exports.sendEmailProcess = async(req, res) => {
-    const { subject, email, message } = req.body
+    const { email, message } = req.body
     //Send email
     await transporter.sendMail({
       from: ' BookswApp <bookswap.ironhack@gmail.com>',
       to: email, 
-      subject, 
+      subject: Swapping-request, 
       text: `Plain text message`,
     //   html: `<p>HTML text ${message}</p>`
     })

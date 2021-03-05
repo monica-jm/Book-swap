@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
-const userReviewSchema = new Schema(
+const suscriptionSchema = new Schema(
   {
     reviewerId: {
       type: Schema.Types.ObjectId,
@@ -28,4 +28,4 @@ const userReviewSchema = new Schema(
   }
 );
 
-module.exports = mongoose.model("UserReview", userReviewSchema);
+module.exports = mongoose.model("Suscription", suscriptionSchema);

@@ -1,5 +1,6 @@
 const Book = require("../models/Book")
 const User = require("../models/User")
+const Place = require("../models/Place")
 
 // Create Book entry
 exports.createBook = async (req, res) => {
@@ -17,7 +18,9 @@ exports.createBook = async (req, res) => {
         bookCover, 
         review,
         //Asociate created book to logged in User
-        owner: req.user
+        owner: req.user,
+        //Asociate created book to loation
+        place: req.place
     })
     // Add new book to users bookshelf (collection)
     await User.findByIdAndUpdate(req.user._id, {
@@ -48,7 +51,7 @@ exports.updateBook = async (req, res) => {
 
   const book = await Book.findByIdAndUpdate(
     bookId,
-    { title, author, isbn, category, bookCover, review },
+    { title, author, isbn, category, bookCover, review, place: req.place },
     { new: true }
   )
   res.status(200).json(book)

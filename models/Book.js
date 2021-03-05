@@ -27,7 +27,10 @@ const BookSchema = new Schema(
     },
     review: {
       type: String,
-      //Add location with mapbox
+    },
+    location: {
+      type: Schema.Types.ObjectId,
+      ref: "Place",
     },
     bookmarks: {
       type: Number,

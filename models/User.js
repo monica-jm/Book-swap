@@ -37,8 +37,8 @@ const userSchema = new Schema(
       default: "https://www.shankarainfra.com/img/avatar.png",
     },
     location: {
-      type: String,
-      //Add location with mapbox
+      type: Schema.Types.ObjectId,
+      ref: "Location",
     },
     role: {
       type: String,
