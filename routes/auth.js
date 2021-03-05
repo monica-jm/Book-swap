@@ -8,12 +8,16 @@ const {
   googleInit, 
   googleCallback, 
   facebookInit,
-  facebookCallback 
+  facebookCallback, 
+  checkToken
 } = require("../controllers/auth")
 
 const { isAuth } = require("../middlewares")
 
 router.post("/login", loginProcess)
+
+//Route params: tag to the token so we can use it in the controller
+router.get("/confirmed/:token", checkToken )
 
 router.post("/signup", signupProcess)
 

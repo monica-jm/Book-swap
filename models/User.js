@@ -46,7 +46,7 @@ const userSchema = new Schema(
       //Switch when suscription is paid
       enum: ["USER", "SUSCRIBER"],
     },
-    wishList: [
+    bookmarks: [
       {
         type: Schema.Types.ObjectId,
         ref: "Book",
@@ -61,7 +61,7 @@ const userSchema = new Schema(
     reviews: [
       {
         type: Schema.Types.ObjectId,
-        ref: "userReview"
+        ref: "UserReview"
       }
     ]
   },

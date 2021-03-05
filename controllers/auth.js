@@ -1,5 +1,6 @@
 const User = require("../models/User")
 const passport = require("passport")
+const templates = require ("../templates/template")
 // Bcrypt to encrypt passwords
 const bcrypt = require("bcryptjs")
 const bcryptSalt = 10
@@ -72,12 +73,15 @@ exports.signupProcess = async (req, res) => {
     newUser
       .save()
       .then(newUser => {
+          const message = `Dear ${newUser.username}, we're really excited you've decided to join the Bookswapp community for book lovers. Please confirm your email to log in.`
+          const token = newUser.confirmationCode;
+          const username = newUser.username;
+          
           transporter.sendMail({
-          from: 'BookswApp <bookswap.ironhack@gmail.com>',
-          to: email,
+          from: 'Bookswapp <bookswap.ironhack@gmail.com>',
+          to: newUser.email,
           subject: "Please confirm your email",
-          text: message, 
-          html: templates.templateExample(message),
+          html: templates.templateExample(message, token, username),
         });
           const {
             _doc: { password, ...rest }
@@ -90,6 +94,33 @@ exports.signupProcess = async (req, res) => {
       })
   })
 }
+
+exports.checkToken = ( req, res ) =>{
+  //Find a user with token from the params
+  console.log(req.params)
+  let {token} = req.params;
+  User.findOne({confirmationCode: token})
+    .then((user)=>{
+      //If theres a full object...
+      if(Object.keys(user).length){
+        // Find the user and update status to Active
+        console.log(user, "Encontré un usuario")
+        User.findOneAndUpdate({confirmationCode: token}, {status: 'Active'}, {new:true})
+        .then((user)=>{
+          res.status(200).json({message:'User confirmed'})
+        })
+        .catch((errDetails)=>{
+          console.log(errDetails)
+          res.status(401).json({message: errDetails})
+        })  
+      }else{
+        res.status(401).json({message: 'User not found'})
+      }
+    })
+    .catch((err)=> {
+      res.status(400).json({message: 'Could not create user', err})
+    })
+};
 
 exports.logoutProcess = (req, res) => {
   req.logout()

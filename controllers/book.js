@@ -16,33 +16,28 @@ exports.createBook = async (req, res) => {
         category, 
         bookCover, 
         review,
-        owner: req.user._id
+        //Asociate created book to logged in User
+        owner: req.user
     })
+    // Add new book to users bookshelf (collection)
     await User.findByIdAndUpdate(req.user._id, {
       $push: { bookshelf: book._id }
     })
-  
     res.status(201).json(book)
   }
 
 // Read Book entry
 exports.getAllBooks = async (req, res) => {
+  // Find all the books and return them 
   const books = await Book.find()
   res.status(200).json({ books })
 }
 
-exports.getBooksByCategory = async (req, res) => {
-  const { category } = req.params
-
-  const books = await Book.find({ category })
-  res.status(200).json({ books })
-}
-
 exports.getBookById = async (req, res) => {
-  const { booktId } = req.params
+  // Get book ID from params(url)
+  const { bookId } = req.params
 
   const book = await Book.findById(bookId)
-    .populate("owner","email username review")
   res.status(200).json(book)
 }
 
@@ -51,28 +46,58 @@ exports.updateBook = async (req, res) => {
   const { bookId } = req.params
   const { title, author, isbn, category, bookCover, review } = req.body
 
-  const book = await Book.findById(bookId)
-
-  if (book.owner.toString() !== req.user._id.toString()) {
-    return res.status(401).json({ message: "Unauthorized" })
-  }
-
-  const bookNew = await Book.findByIdAndUpdate(
+  const book = await Book.findByIdAndUpdate(
     bookId,
     { title, author, isbn, category, bookCover, review },
     { new: true }
   )
-
-  res.status(200).json(bookNew)
+  res.status(200).json(book)
 }
 
-// Delete Book entry
+exports.updateBookmarks = async (req, res) => {
+ // 1. Get book ID
+const { bookId } = req.params
+const { bookshelf, bookmarks, _id} = req.user
+
+ // 2. Prevent adding your own books 
+ if (bookshelf.includes(bookId))
+ return res.status(401).json({
+   message: "Unauthorized"
+ })
+ let book
+
+ const user = await User.findOne({_id}) //We need to declare the user again in order to save it on the data base
+
+ // 3. Search for selected book in users bookmarks
+ if(bookmarks.includes(bookId)){
+    // 4. If the book is already on the wish list we remove it
+    user.bookmarks.splice(bookmarks.indexOf(bookId), 1), 
+    book = await Book.findByIdAndUpdate(
+      bookId,
+      { $inc: { likes: -1 } },
+    {new:true}
+    )
+ }else{
+    // 5. If the book is not on the wish list we add it 
+    user.bookmarks.push(bookId)
+    book = await Book.findByIdAndUpdate(
+      bookId,
+      { $inc: { likes: 1 } },
+      { new: true }
+    )
+ }
+ console.log(book)
+ await user.save()
+ res.json({user, book})
+}
+
+// Delete Book
 exports.deleteBook = async (req, res) => {
   const { bookId } = req.params
 
   await Book.findByIdAndRemove(bookId)
 
   res.status(200).json({
-    message: "Book entry deleted"
+    message: "Book deleted"
   })
 }

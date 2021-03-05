@@ -1,8 +1,7 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require("mongoose")
 //Schema = Schema
-const { Schema } = mongoose;
 
-const bookSchema = new Schema(
+const BookSchema = new Schema(
   {
     owner: {
     type: Schema.Types.ObjectId,
@@ -24,11 +23,15 @@ const bookSchema = new Schema(
     },
     bookCover: {
       type: String,
-      default: "https://www.shankarainfra.com/img/avatar.png",
+      required: [true, "Please add a Book cover"],
     },
     review: {
       type: String,
       //Add location with mapbox
+    },
+    bookmarks: {
+      type: Number,
+      default: 0
     },
   },
   {
@@ -39,4 +42,4 @@ const bookSchema = new Schema(
   }
 );
 
-module.exports = model("Book", bookSchema);
+module.exports = model("Book", BookSchema)
