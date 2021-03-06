@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 //Nodemailer===========
-const {
-  sendEmailProcess
-} = require("../controllers/nodemailer")
+// const {
+//   sendEmailProcess
+// } = require("../controllers/nodemailer")
 const { isAuth, catchErrors } = require("../middlewares")
 //Books===========
 const {
@@ -22,7 +22,7 @@ router.get("/", (req, res, next) => {
 });
 
 //===========Nodemailer===========
-router.post('/send-email', catchErrors(sendEmailProcess));;
+// router.post('/send-email', catchErrors(sendEmailProcess));;
 
 //===========Books===========
 router.post("/book/create", isAuth, catchErrors(createBook));
@@ -33,7 +33,7 @@ router.get("/book/:bookId", catchErrors(getBookById));
 
 router.patch("/book/update/:bookId", isAuth, catchErrors(updateBook));
 
-router.patch("/book/:bookId/add", isAuth, catchErrors(updateBookmarks));
+router.patch("/book/add/:bookId/", isAuth, catchErrors(updateBookmarks));
 
 router.delete("/book/delete/:bookId", isAuth, catchErrors(deleteBook));
 

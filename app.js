@@ -11,7 +11,7 @@ const flash = require("connect-flash")
 const cors = require("cors")
 
 mongoose
-  .connect("mongodb://localhost/server", { useNewUrlParser: true })
+  .connect(process.env.DB, { useNewUrlParser: true })
   .then(x => {
     console.log(`Connected to Mongo! Database name: "${x.connections[0].name}"`)
   })
@@ -46,7 +46,7 @@ app.use(
 app.use(flash())
 require("./passport")(app)
 
-app.use("/", require("./routes/index"))
-app.use("/auth", require("./routes/auth"))
+app.use("/api", require("./routes/index"))
+app.use("/api/auth", require("./routes/auth"))
 
 module.exports = app

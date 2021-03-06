@@ -23,8 +23,7 @@ exports.createBook = async (req, res) => {
         bookCover, 
         review,
         //Asociate created book to location
-        lat,
-        lng,
+        location,
         //Asociate created book to logged in User
         owner: req.user,
     })
