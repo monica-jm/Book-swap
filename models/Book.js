@@ -29,8 +29,9 @@ const BookSchema = new Schema(
       type: String,
     },
     location: {
-      type: Schema.Types.ObjectId,
-      ref: "Place",
+      //Type: location property, which is type string
+      type: { type: String },
+      coordinates: [Number]
     },
     bookmarks: {
       type: Number,
@@ -44,5 +45,8 @@ const BookSchema = new Schema(
     },
   }
 );
+
+// Tell mongo to render a 2D map
+BookSchema.index({ location: "2dsphere" })
 
 module.exports = model("Book", BookSchema)

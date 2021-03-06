@@ -1,11 +1,16 @@
 const Book = require("../models/Book")
 const User = require("../models/User")
-const Place = require("../models/Place")
 
 // Create Book entry
 exports.createBook = async (req, res) => {
-    const { title, author, isbn, category, bookCover, review  } = req.body
+    const { title, author, isbn, category, bookCover, review, lat, lng  } = req.body
   
+    // Pin for coordinates
+    const location = {
+      type: 'Point',
+      coordinates: [lng, lat]
+    } 
+
     if (!['Action and Adventure', 'Classics', 'Comic Book or Graphic Novel', 'Detective and Mystery', 'Fantasy', 'Historical Fiction', 'Horror', 'Arts & Music', 'Biographies', 'Business', 'Computers & Tech', 'Cooking', 'Edu & Reference', 'Entertainment', 'Health & Fitness', 'History', 'Hobbies & Crafts', 'Home & Garden', 'Kids', 'Literature & Fiction', 'Medical', 'Parenting', 'Religion', 'Romance', 'Sci-Fi & Fantasy', 'Science & Math', 'Self-Help', 'Social Sciences', 'Sports', 'Travel', 'Teen', 'True Crime', 'Special editions', 'Other'].includes(category)) {
       return res.status(400).json({ message: "Please select a category" })
     }
@@ -17,17 +22,19 @@ exports.createBook = async (req, res) => {
         category, 
         bookCover, 
         review,
+        //Asociate created book to location
+        lat,
+        lng,
         //Asociate created book to logged in User
         owner: req.user,
-        //Asociate created book to loation
-        place: req.place
     })
+
     // Add new book to users bookshelf (collection)
     await User.findByIdAndUpdate(req.user._id, {
       $push: { bookshelf: book._id }
-    })
-    res.status(201).json(book)
-  }
+      })
+      res.status(201).json(book)
+    }
 
 // Read Book entry
 exports.getAllBooks = async (req, res) => {

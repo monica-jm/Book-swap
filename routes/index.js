@@ -15,8 +15,6 @@ const {
   deleteBook
 } = require("../controllers/book");
 const UserReview = require("../models/UserReview");
-const { createPlace, getAllPlaces, getOnePlace } = require("../controllers/place");
-
 
 /* GET home page */
 router.get("/", (req, res, next) => {
@@ -45,11 +43,6 @@ router.patch("/review/:reviewedId", isAuth, catchErrors(UserReview));
 //===========Suscription===========
 router.post("/suscribe", isAuth, catchErrors(UserReview));
 router.post("/jg", isAuth, catchErrors(UserReview))
-
-//===========Places===========
-router.post("/places/create", catchErrors(createPlace) );
-router.get("/places/:placeId", catchErrors(getOnePlace));
-router.get("/places", catchErrors(getAllPlaces) );
 
 module.exports = router;
 

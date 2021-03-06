@@ -36,10 +36,6 @@ const userSchema = new Schema(
       type: String,
       default: "https://www.shankarainfra.com/img/avatar.png",
     },
-    location: {
-      type: Schema.Types.ObjectId,
-      ref: "Location",
-    },
     role: {
       type: String,
       default: "USER",
