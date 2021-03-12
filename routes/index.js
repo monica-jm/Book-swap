@@ -33,7 +33,7 @@ router.get("/book/:bookId", catchErrors(getBookById));
 
 router.patch("/book/update/:bookId", isAuth, catchErrors(updateBook));
 
-router.patch("/book/add/:bookId/", isAuth, catchErrors(updateBookmarks));
+router.patch("/book/add/:bookId", isAuth, catchErrors(updateBookmarks));
 
 router.delete("/book/delete/:bookId", isAuth, catchErrors(deleteBook));
 

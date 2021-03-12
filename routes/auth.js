@@ -9,7 +9,8 @@ const {
   googleCallback, 
   facebookInit,
   facebookCallback, 
-  checkToken
+  checkToken,
+  changeAvatar
 } = require("../controllers/auth")
 
 const { isAuth } = require("../middlewares")
@@ -24,6 +25,8 @@ router.post("/signup", signupProcess)
 router.get("/logout", logoutProcess)
 
 router.get("/session", checkSession)
+
+router.post("/avatar/change", isAuth, changeAvatar)
 
 router.get("/google", googleInit)
 router.get("/google/callback", googleCallback)

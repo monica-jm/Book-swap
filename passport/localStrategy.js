@@ -12,7 +12,7 @@ passport.use(
       passwordField: "password"
     },
     (email, password, done) => {
-      User.findOne({ email })
+      User.findOne({ email }).populate("bookshelf", "title author category bookCover review")
         .then(foundUser => {
           if (!foundUser) {
             done(null, false, { message: "Incorrect username" })
@@ -23,7 +23,6 @@ passport.use(
             done(null, false, { message: "Incorrect password" })
             return
           }
-
           done(null, foundUser)
         })
         .catch(err => done(err))

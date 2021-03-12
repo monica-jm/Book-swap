@@ -23,7 +23,6 @@ const BookSchema = new Schema(
     },
     bookCover: {
       type: String,
-      required: [true, "Please add a Book cover"],
     },
     review: {
       type: String,

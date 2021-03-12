@@ -1,6 +1,12 @@
 const Book = require("../models/Book")
 const User = require("../models/User")
 
+//Delete password and other data from response to front-end
+const clearRes = data => {
+  const { password, __v, created_at, updated_at, ...cleanedData } = data
+  return cleanedData
+}
+
 // Create Book entry
 exports.createBook = async (req, res) => {
     const { title, author, isbn, category, bookCover, review, lat, lng  } = req.body
@@ -9,10 +15,6 @@ exports.createBook = async (req, res) => {
     const location = {
       type: 'Point',
       coordinates: [lng, lat]
-    } 
-
-    if (!['Action and Adventure', 'Classics', 'Comic Book or Graphic Novel', 'Detective and Mystery', 'Fantasy', 'Historical Fiction', 'Horror', 'Arts & Music', 'Biographies', 'Business', 'Computers & Tech', 'Cooking', 'Edu & Reference', 'Entertainment', 'Health & Fitness', 'History', 'Hobbies & Crafts', 'Home & Garden', 'Kids', 'Literature & Fiction', 'Medical', 'Parenting', 'Religion', 'Romance', 'Sci-Fi & Fantasy', 'Science & Math', 'Self-Help', 'Social Sciences', 'Sports', 'Travel', 'Teen', 'True Crime', 'Special editions', 'Other'].includes(category)) {
-      return res.status(400).json({ message: "Please select a category" })
     }
   
     const book = await Book.create({
@@ -29,16 +31,17 @@ exports.createBook = async (req, res) => {
     })
 
     // Add new book to users bookshelf (collection)
-    await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findByIdAndUpdate(req.user._id, {
       $push: { bookshelf: book._id }
-      })
-      res.status(201).json(book)
+      }, {new:true}).populate("bookshelf", "title author category bookCover review")
+      req.user = user; 
+      res.status(201).json(clearRes(user.toObject()))
     }
 
 // Read Book entry
 exports.getAllBooks = async (req, res) => {
   // Find all the books and return them 
-  const books = await Book.find()
+  const books = await Book.find().populate("owner", "username email avatar reviews")
   res.status(200).json({ books })
 }
 

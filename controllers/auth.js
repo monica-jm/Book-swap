@@ -29,13 +29,14 @@ exports.loginProcess = (req, res, next) => {
 
     req.login(user, error => {
       if (error) return res.status(500).json({ message: errDetails })
-      const usr = clearRes(user.toObject())
+      const usr = clearRes(user.toObject()) 
       res.status(200).json(usr)
     })
   })(req, res, next)
 }
 
 exports.signupProcess = async (req, res) => {
+try{
   const { email, password, username } = req.body
 
   if (email === "" || password === "" || username === "") {
@@ -43,9 +44,14 @@ exports.signupProcess = async (req, res) => {
     return
   }
 
-  User.findOne({ email }, "email", (err, user) => {
+  const usernameExits = await User.findOne({ username })
+  if (usernameExits) {
+    return res.status(401).json({ message: "The username already exists" })
+  }
+
+  User.findOne({ username}, (err, user) => {
     if (user !== null) {
-      res.status(400).json({ message: "The email already exists" })
+      res.status(400).json({ message: "The name already exists" })
       return
     }
 
@@ -86,13 +92,17 @@ exports.signupProcess = async (req, res) => {
           const {
             _doc: { password, ...rest }
           } = newUser
-          res.status(200).json({message: 'Confirmation email sent'});
+          res.status(200).json({ message: 'Confirmation email sent'});
       })   
       .catch(err => {
         console.log(err)
         res.status(500).json({ message: err.message })
       })
   })
+}
+catch(err){
+  console.log(err)
+}
 }
 
 exports.checkToken = ( req, res ) =>{
@@ -127,12 +137,30 @@ exports.logoutProcess = (req, res) => {
   res.json({ message: "loggedout" })
 }
 
-exports.checkSession = (req, res) => {
+exports.checkSession = async(req, res) => {
   if (req.user) {
-    const usr = clearRes(req.user.toObject())
-    return res.status(200).json(usr)
+    const usr = await (await User.findById(req.user._id).populate("bookshelf", "title author category bookCover review").populate("bookmarks", "title author category bookCover review" )) 
+    return res.status(200).json(clearRes(usr.toObject()))
   }
   res.status(200).json(null)
+}
+
+
+
+exports.changeAvatar = async (req, res) => {
+  const { avatar } = req.body
+
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    { $set: { avatar } },
+    { new: true }
+  )
+
+  const {
+    _doc: { password, ...rest }
+  } = user
+
+  res.status(200).json(rest)
 }
 
 exports.getUserProfile = (req, res) => {
