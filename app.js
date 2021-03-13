@@ -1,4 +1,5 @@
 require("dotenv").config()
+const path = require ("path")
 
 const bodyParser = require("body-parser")
 const cookieParser = require("cookie-parser")
@@ -28,10 +29,11 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(
   cors({
-    origin: ["http://localhost:3000"],
+    origin: ["http://localhost:3000", "https://bookswapp-project.herokuapp.com/"],
     credentials: true
   })
 )
+app.use(express.static(path.join(__dirname,"public")))
 
 
 // Enable authentication using session + passport
@@ -48,5 +50,8 @@ require("./passport")(app)
 
 app.use("/api", require("./routes/index"))
 app.use("/api/auth", require("./routes/auth"))
+app.use("*", (req,res)=>{ 
+  res.sendFile(path.join(__dirname, "public","index.html"));
+});
 
 module.exports = app
