@@ -11,7 +11,6 @@ const transporter = nodemailer.createTransport({
 
 exports.sendEmailProcess = async(req, res) => {
     const { username, email, message } = req.body
-    const { senderUsername, senderEmail, senderMessage } = req.user
 
     const message = `Hello ${username}, I would like to swap a book with you, lets set a meeting point`
 
